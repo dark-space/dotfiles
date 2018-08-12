@@ -13,7 +13,7 @@ set number
 " 保存したとき、前の保存状態をバックアップする
 set backup
 " バックアップ場所
-"set backupdir=~/.vim_backup
+set backupdir=~/.vim/backup
 " エンコーディング
 set fileencodings=utf-8,cp932
 " インクリメンタルサーチ
