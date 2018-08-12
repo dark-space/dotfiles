@@ -1,0 +1,33 @@
+# デバッグ用のコマンド
+function display_zsh_env() {
+    echo ""
+    echo "BUFFER= \"$BUFFER\""
+    echo "RBUFFER= \"$RBUFFER\""
+    echo "LBUFFER= \"$LBUFFER\""
+    echo "BUFFERLINES= \"$BUFFERLINES\""
+    echo "CONTEXT= \"$CONTEXT\""
+    echo "CURSOR= \"$CURSOR\""
+    echo "CUTBUFFER= \"$CUTBUFFER\""
+    echo "HISTNO= \"$HISTNO\""
+    echo "KEYMAP= \"$KEYMAP\""
+    echo "KEYS= \"$KEYS\""
+    echo "killring= \"$killring\""
+    echo "LASTABORTEDSEARCH= \"$LASTABORTEDSEARCH\""
+    echo "LASTSEARCH= \"$LASTSEARCH\""
+    echo "LASTWIDGET= \"$LASTWIDGET\""
+    echo "MARK= \"$MARK\""
+    echo "NUMERIC= \"$NUMERIC\""
+    echo "PENDING= \"$PENDING\""
+    echo "PREBUFFER= \"$PREBUFFER\""
+    echo "PREDISPLAY= \"$PREDISPLAY\""
+    echo "POSTDISPLAY= \"$POSTDISPLAY\""
+    echo "REGION_ACTIVE= \"$REGION_ACTIVE\""
+    echo "region_highlight= \"$region_highlight\""
+    echo "UNDO_CHANGE_NO= \"$UNDO_CHANGE_NO\""
+    echo "WIDGET= \"$WIDGET\""
+    echo "WIDGETFUNC= \"$WIDGETFUNC\""
+    echo "WIDGETSTYLE= \"$WIDGETSTYLE\""
+    echo "ZLE_STATE= \"$ZLE_STATE\""
+}
+zle -N display_zsh_env
+bindkey "^d^e" display_zsh_env
