@@ -1,8 +1,7 @@
 # screen用に環境変数SHELLを設定
 export SHELL=$(which zsh)
 # 環境変数の設定
-export PATH_CLEAN=${PATH_CLEAN-$PATH}
-export PATH=.:${MY_TOOL_PATH}:${MY_BIN_PATH}:$HOME/.nimble/bin:${JAVA_HOME}/bin:${PATH}
+export PATH=${CLI_APP_PAT}/bin:${NIM_HOME}/bin:${PATH}
 # PATH の重複を消去する
 typeset -U path
 # プロンプトの設定
