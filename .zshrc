@@ -1,4 +1,4 @@
-if [ $# -eq 0 ] && [[ $0 =~ ^- ]]; then
+if [ $# -eq 0 ] && [[ $0 =~ ^-?zsh$ ]]; then
     dotfiles=$(dirname $(readlink -e ~/.zshrc))
 else
     dotfiles=$(dirname $(readlink -e $0))

@@ -1,4 +1,4 @@
-if [ $# -eq 0 ] && [[ "$0" =~ ^- ]]; then
+if [ $# -eq 0 ] && [[ "$0" =~ ^-?bash$ ]]; then
     dotfiles=$(dirname $(readlink -e ~/.bashrc))
 else
     dotfiles=$(dirname $(readlink -e $0))
