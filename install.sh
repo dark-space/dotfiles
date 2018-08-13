@@ -24,15 +24,17 @@ vim() {
 cli() {
     cd $HOME
     if $develop; then
+        rm -fr cli
         git clone https://github.com/dark-space/cli
         mkdir -p cli/bin
         sh cli/CompileAll.sh
     else
+        rm -fr cli/bin
         mkdir -p cli
-        #Download bin
+        cd cli
+        curl https://raw.githubusercontent.com/dark-space/cli/master/download-bin.sh | sh
     fi
 }
-
 
 dotfiles
 vim
