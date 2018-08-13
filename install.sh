@@ -16,25 +16,6 @@ dotfiles() {
     done
 }
 
-nim() {
-    cd $HOME
-    if ! $develop; then
-        return
-    fi
-    if [ -e $HOME/.nimble ]; then
-        return
-    fi
-    wget https://nim-lang.org/download/nim-0.18.0.tar.xz
-    tar xvf nim-0.18.0.tar.xz
-    cd nim-0.18.0
-    sh build.sh
-    bin/nim c koch
-    ./koch tools
-    mkdir -p $HOME/.nimble
-    mv bin $HOME/.nimble
-    cd -
-}
-
 vim() {
     cd $HOME
     mkdir -p .vim/backup
@@ -45,7 +26,7 @@ cli() {
     if $develop; then
         git clone https://github.com/dark-space/cli
         mkdir -p cli/bin
-        PATH=~/.nimble/bin:$PATH sh cli/CompileAll.sh
+        sh cli/CompileAll.sh
     else
         echo "Not yet implemented"
     fi
@@ -53,6 +34,5 @@ cli() {
 
 
 dotfiles
-nim
 vim
 cli
