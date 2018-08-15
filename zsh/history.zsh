@@ -10,11 +10,11 @@ function __fzfcmd_dev() {
 }
 
 function preexec_history() {
-    cmd=$1
-    echo "$cmd$(builtin pwd)" >> $history_all
+    cmd=$(shownl -t <<< $1)
+    cat <<< "$cmd$(builtin pwd)" >> $history_all
     local history_dir="${history_basedir}$(builtin pwd)"
     mkdir -p $history_dir
-    echo "$cmd" >> $history_dir/history
+    cat <<< "$cmd" >> $history_dir/history
     history_session+="\n"$cmd
 }
 
@@ -23,7 +23,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
         local history_file="${history_basedir}$(builtin pwd)/history"
         if [ -e $history_file ]; then
             IFS=$'\n' local out=( \
-                $(history | sed -e 's/^\s*\S\+\s*//' | tac | unique | grep -i "^$LBUFFER" | \
+                $(tac $history_file | unique | grep -i "^$LBUFFER" | \
                 FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=\"ctrl-r:toggle-sort\" $FZF_CTRL_R_OPTS +m --expect=ctrl-e" \
                 $(__fzfcmd_dev)) \
             )
@@ -33,15 +33,14 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 #$(tac $history_file | unique | grep -i "^$LBUFFER" | \
             local ret=$?
             local key=$(lines 1  <<< "$out")
-            local cmd=$(lines 2: <<< "$out")
             if [ "$key" = "ctrl-e" ]; then
-                BUFFER="$cmd"
+                BUFFER=$(lines 2: <<< "$out" | sed -e 's/\\n/\n/g')
+                CURSOR=${#BUFFER}
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
-                zle end-of-line
                 return $ret
             else
-                BUFFER="$out"
+                BUFFER=$(sed -e 's/\\n/\n/g' <<< "$out")
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 zle accept-line
