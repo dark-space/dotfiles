@@ -20,7 +20,6 @@ function chpwd() {
 
 function precmd() {
     PIPESTATUS=$pipestatus
-    precmd_history "$@"
     precmd_pipestatus $PIPESTATUS "$@"
 }
 

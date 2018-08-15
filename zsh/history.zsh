@@ -1,24 +1,33 @@
 #
 # 独自のコマンドヒストリを作る
 #
-LIB_DIR="$dotfiles/zsh"
-HISTORY_LIST="$HOME/.zsh_histories"
-BASE_DIR="$HOME/.zsh_dir_history"
-
-NEXT_BUFFER=""
+history_all=$HOME/.zsh/history_all.txt
+history_basedir=$HOME/.zsh/histories
 
 function preexec_history() {
-    DIR="${BASE_DIR}$(builtin pwd)"
-    mkdir -p $DIR
-    perl $LIB_DIR/formatCommandHistory.pl $1 $HISTORY_LIST "$DIR/history"
+    cmd=$1
+    echo "$cmd$(builtin pwd)" >> $history_all
+    local history_dir="${history_basedir}$(builtin pwd)"
+    mkdir -p $history_dir
+    echo "$cmd" >> $history_dir/history
 }
 
-function precmd_history() {
-    if [ ! -z $NEXT_BUFFER ]; then
-        print -z $NEXT_BUFFER
+fzf-history-widget() {
+    local history_file="${history_basedir}$(builtin pwd)/history"
+    if [ -e $history_file ]; then
+        local selected=( \
+            $(tac $history_file | unique | \
+            FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=\"ctrl-r:toggle-sort\" $FZF_CTRL_R_OPTS --query=${(qqq)LBUFFER} +m" \
+            ./$(__fzfcmd)) \
+        )
+        local ret=$?
+        BUFFER="$selected"
+        zle redisplay
+        typeset -f zle-line-init >/dev/null && zle zle-line-init
+        zle accept-line
+        return $ret
     fi
-    NEXT_BUFFER=""
 }
-
-bindkey "^r" history-incremental-pattern-search-backward
+zle -N fzf-history-widget
+bindkey "^r" fzf-history-widget
 
