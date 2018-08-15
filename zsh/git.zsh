@@ -14,5 +14,17 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     }
     zle -N fzf-git-widget
     bindkey "^g^i^t" fzf-git-widget
+
+    function fzf-git-log-widget() {
+        local selected=($(git log --graph --decorate --oneline --abbrev=40 --color=always | $(__fzfcmd_dev) --reverse --ansi | grep -o '[0-9a-z]\{40\}'))
+        if [[ "$selected" =~ \\S ]]; then
+            BUFFER+="$selected"
+            CURSOR=${#BUFFER}
+            zle redisplay
+            typeset -f zle-line-init >/dev/null && zle zle-line-init
+        fi
+    }
+    zle -N fzf-git-log-widget
+    bindkey "^g^l" fzf-git-log-widget
 fi
 
