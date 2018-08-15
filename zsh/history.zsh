@@ -16,31 +16,33 @@ function preexec_history() {
     echo "$cmd" >> $history_dir/history
 }
 
-function fzf-history-widget() {
-    local history_file="${history_basedir}$(builtin pwd)/history"
-    if [ -e $history_file ]; then
-        IFS=$'\n' local out=( \
-            $(tac $history_file | unique | \
-            FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=\"ctrl-r:toggle-sort\" $FZF_CTRL_R_OPTS --query=${(qqq)LBUFFER} +m --expect=ctrl-e" \
-            $(__fzfcmd_dev)) \
-        )
-        local ret=$?
-        local key=$(lines 1  <<< "$out")
-        local cmd=$(lines 2: <<< "$out")
-        if [ "$key" = "ctrl-e" ]; then
-            BUFFER="$cmd"
-            zle redisplay
-            typeset -f zle-line-init >/dev/null && zle zle-line-init
-            zle end-of-line
-            return $ret
-        else
-            BUFFER="$out"
-            zle redisplay
-            typeset -f zle-line-init >/dev/null && zle zle-line-init
-            zle accept-line
+if which $(__fzfcmd_dev) >/dev/null 2>&1; then
+    function fzf-history-widget() {
+        local history_file="${history_basedir}$(builtin pwd)/history"
+        if [ -e $history_file ]; then
+            IFS=$'\n' local out=( \
+                $(tac $history_file | unique | grep -i "^$LBUFFER" | \
+                FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=\"ctrl-r:toggle-sort\" $FZF_CTRL_R_OPTS +m --expect=ctrl-e" \
+                $(__fzfcmd_dev)) \
+            )
+            local ret=$?
+            local key=$(lines 1  <<< "$out")
+            local cmd=$(lines 2: <<< "$out")
+            if [ "$key" = "ctrl-e" ]; then
+                BUFFER="$cmd"
+                zle redisplay
+                typeset -f zle-line-init >/dev/null && zle zle-line-init
+                zle end-of-line
+                return $ret
+            else
+                BUFFER="$out"
+                zle redisplay
+                typeset -f zle-line-init >/dev/null && zle zle-line-init
+                zle accept-line
+            fi
         fi
-    fi
-}
-zle -N fzf-history-widget
-bindkey "^r" fzf-history-widget
+    }
+    zle -N fzf-history-widget
+    bindkey "^r" fzf-history-widget
+fi
 
