@@ -6,13 +6,14 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     function fzf-git-add() {
         local selected=($(unbuffer git status -sb | $(__fzfcmd_dev) --reverse --ansi --preview="git diff --color=always {2..}" --preview-window=up:80% -m | grep -v '^##' | awk '{print $2}'))
         if [[ "$selected" =~ \\S ]]; then
+            sed -e 's/\s\+/\n/g' -e 's/^/add /' <<< "$selected"
             git add $selected
         fi
     }
     alias ga='fzf-git-add'
 
     function fzf-git-branch() {
-        local selected=$(git branch --color=always | $(__fzfcmd_dev) --reverse --ansi)
+        local selected=$(git branch --color=always | $(__fzfcmd_dev) --reverse --ansi | sed -e 's/^\s*\*\s\+//')
         if [[ "$selected" =~ \\S ]]; then
             git checkout $selected
         fi
