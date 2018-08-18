@@ -31,9 +31,17 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
             fi
             tac $history_here | unique | grep -i "^$LBUFFER"
         elif [ "$type" = "all" ]; then
-            tac $history_all | sed -e 's//\t[33m/' -e 's/$/[0m/' | unique | grep -i "^$LBUFFER"
+            cat -n $history_all | tac | unique -b -f=1 | sed -e 's/.*$//' | grep -i "^\s*[0-9]\+\s\+$LBUFFER"
         elif [ "$type" = "session" ]; then
             echo -e $history_session | tac | unique | grep -i "^$LBUFFER"
+        fi
+    }
+
+    function __remove_number() {
+        if [ "$1" = "all" ]; then
+            echo "de"
+        else
+            echo "cat"
         fi
     }
 
@@ -41,18 +49,20 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
         local history_type=${HISTORY_TYPE:-"all"}
         while IFS=$'\n' local out=( \
             $(read_history $history_type | \
-            FZF_DEFAULT_OPTS="--ansi --height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index $FZF_CTRL_R_OPTS +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h" \
+            FZF_DEFAULT_OPTS="--ansi $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index $FZF_CTRL_R_OPTS +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h --preview=\"lines {1} $history_all | sed -e 's/^.*//' | xargs unbuffer ls --color | head -3\" --preview-window=up:30%" \
             $(__fzfcmd_dev)) \
         ); do
             local ret=$?
             local key=$(lines 1  <<< "$out")
             if [ "$key" = "ctrl-a" ]; then
-                BUFFER=$(lines 2: <<< "$out" | sed -e 's/\\n/\n/g')
+                out=$(lines 2 <<< "$out")
+                BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 return $ret
             elif [ "$key" = "ctrl-e" ]; then
-                BUFFER=$(lines 2: <<< "$out" | sed -e 's/\\n/\n/g')
+                out=$(lines 2 <<< "$out")
+                BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
                 CURSOR=${#BUFFER}
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
@@ -66,7 +76,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
             elif [ "$key" = "ctrl-h" ]; then
                 history_type="history"
             else
-                BUFFER=$(sed -e 's/\\n/\n/g' <<< "$out")
+                BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 zle accept-line
