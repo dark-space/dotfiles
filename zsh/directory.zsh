@@ -38,7 +38,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
         local directory_type=${DIRECTORY_TYPE:-"all"}
         local query=""
         while IFS=$'\n' local out=( \
-            $(read_directory $directory_type | $(__fzfcmd_dev) --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-d,ctrl-s,ctrl-m --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%)
+            $(read_directory $directory_type | $(__fzfcmd_dev) --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-d,ctrl-s,ctrl-m --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%)
         ); do
             query=$(lines 1 <<< "$out")
             if [[ "$query" =~ ^ctrl- ]]; then
@@ -56,6 +56,12 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
             elif [ "$key" = "ctrl-m" ]; then
                 builtin cd "$out"
                 zle reset-prompt
+                break
+            elif [ "$key" = "ctrl-c" ]; then
+                BUFFER="$query"
+                CURSOR=${#BUFFER}
+                zle redisplay
+                typeset -f zle-line-init >/dev/null && zle zle-line-init
                 break
             else
                 break
