@@ -2,7 +2,7 @@
 # 独自のディレクトリスタックを作る
 #
 directory_all=$HOME/.zsh/directory_all.txt
-directory_session=""
+directory_session="$(builtin pwd)"
 
 function __fzfcmd_dev() {
     echo "$HOME/fzf"
@@ -10,7 +10,7 @@ function __fzfcmd_dev() {
 
 function chpwd_directory() {
     builtin pwd >> $directory_all
-    directory_session+="\n"$(builtin pwd)
+    directory_session+=$'\n'$(builtin pwd)
 }
 
 if which $(__fzfcmd_dev) >/dev/null 2>&1; then
@@ -19,20 +19,19 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
         if [ "$directory_type" = "all" ]; then
             tac $directory_all | unique
         elif [ "$directory_type" = "session" ]; then
-            tac <<< $directory_session | unique
+            cat <<< $directory_session | unique
         fi
     }
 
     function fzf-directory-widget() {
-        local fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t --preview=\"cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30%"
-        local directory_type=${HISTORY_TYPE:-"all"}
+        local directory_type=${DIRECTORY_TYPE:-"all"}
         while IFS=$'\n' local out=( \
-            $(read_directory $directory_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev))
+            $(read_directory $directory_type | $(__fzfcmd_dev) --no-sort --ansi +m --expect=ctrl-d,ctrl-s --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%)
         ); do
-            local ret=$?
-            fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t"
             local key=$(lines 1  <<< "$out")
-            if [ "$key" = "ctrl-s" ]; then
+            if [ "$key" = "ctrl-d" ]; then
+                directory_type="all"
+            elif [ "$key" = "ctrl-s" ]; then
                 directory_type="session"
             else
                 if [[ "$out" =~ \\S ]]; then
