@@ -16,6 +16,7 @@ function preexec() {
 }
 
 function chpwd() {
+    chpwd_directory "$@"
 }
 
 function precmd() {
