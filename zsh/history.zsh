@@ -20,25 +20,27 @@ function preexec_history() {
 
 if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     function read_history() {
-        local type=$1
-        if [ "$type" = "history" ]; then
+        local history_type=$1
+        if [ "$history_type" = "history" ]; then
             history | sed -e 's/^\s*\S\+\s*//' | tac | unique | grep -i "^$LBUFFER"
-        elif [ "$type" = "directory" ]; then
+        elif [ "$history_type" = "directory" ]; then
             local history_here="${history_basedir}$(builtin pwd)/history"
             if [ ! -e $history_here ]; then
                 mkdir -p $(dirname $history_here)
                 touch $history_here
             fi
             tac $history_here | unique | grep -i "^$LBUFFER"
-        elif [ "$type" = "all" ]; then
-            cat -n $history_all | tac | unique -b -f=1 | sed -e 's/.*$//' | grep -i "^\s*[0-9]\+\s\+$LBUFFER"
-        elif [ "$type" = "session" ]; then
+        elif [ "$history_type" = "all_there" ]; then
+            cat -n $history_all | tac | unique -f=1 | sed -e 's/.*$//' | grep -i "^\s*[0-9]\+\s\+$LBUFFER"
+        elif [ "$history_type" = "all" ]; then
+            sed -e 's/.*$//' $history_all | tac | unique | grep -i "^$LBUFFER"
+        elif [ "$history_type" = "session" ]; then
             echo -e $history_session | tac | unique | grep -i "^$LBUFFER"
         fi
     }
 
     function __remove_number() {
-        if [ "$1" = "all" ]; then
+        if [ "$1" = "all_there" ]; then
             echo "de"
         else
             echo "cat"
@@ -46,13 +48,13 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     }
 
     function fzf-history-widget() {
+        local fzf_default_opts="--ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
         local history_type=${HISTORY_TYPE:-"all"}
         while IFS=$'\n' local out=( \
-            $(read_history $history_type | \
-            FZF_DEFAULT_OPTS="--ansi $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index $FZF_CTRL_R_OPTS +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h --preview=\"lines {1} $history_all | sed -e 's/^.*//' | xargs unbuffer ls --color | head -3\" --preview-window=up:30%" \
-            $(__fzfcmd_dev)) \
+            $(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev))
         ); do
             local ret=$?
+            fzf_default_opts="--ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
             local key=$(lines 1  <<< "$out")
             if [ "$key" = "ctrl-a" ]; then
                 out=$(lines 2 <<< "$out")
@@ -75,6 +77,9 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 history_type="session"
             elif [ "$key" = "ctrl-h" ]; then
                 history_type="history"
+            elif [ "$key" = "ctrl-t" ]; then
+                history_type="all_there"
+                fzf_default_opts+="--preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'cat' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30%"
             else
                 BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
                 zle redisplay
