@@ -24,34 +24,21 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     }
 
     function fzf-directory-widget() {
-        local fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t --query=$LBUFFER"
+        local fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t --preview=\"cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30%"
         local directory_type=${HISTORY_TYPE:-"all"}
         while IFS=$'\n' local out=( \
             $(read_directory $directory_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev))
         ); do
             local ret=$?
-            fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t --query=$LBUFFER"
+            fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t"
             local key=$(lines 1  <<< "$out")
-            if [ "$key" = "ctrl-a" ]; then
-                out=$(lines 2 <<< "$out")
-                BUFFER+="$out"
-                zle redisplay
-                typeset -f zle-line-init >/dev/null && zle zle-line-init
-                return $ret
-            elif [ "$key" = "ctrl-e" ]; then
-                out=$(lines 2 <<< "$out")
-                BUFFER+="$out"
-                CURSOR=${#BUFFER}
-                zle redisplay
-                typeset -f zle-line-init >/dev/null && zle zle-line-init
-                return $ret
-            elif [ "$key" = "ctrl-s" ]; then
+            if [ "$key" = "ctrl-s" ]; then
                 directory_type="session"
             else
-                BUFFER="cd $out"
-                zle redisplay
-                typeset -f zle-line-init >/dev/null && zle zle-line-init
-                zle accept-line
+                if [[ "$out" =~ \\S ]]; then
+                    builtin cd "$out"
+                    zle reset-prompt
+                fi
                 break
             fi
         done
