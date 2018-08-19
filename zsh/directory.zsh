@@ -3,14 +3,25 @@
 #
 directory_all=$HOME/.zsh/directory_all.txt
 directory_session="$(builtin pwd)"
+directory_index=1
 
 function __fzfcmd_dev() {
     echo "$HOME/fzf"
 }
 
+function __add_directory_session() {
+    if [ $# -gt 0 ]; then
+        directory_session=$(lines :-1 <<< $directory_session)
+        directory_index=$1
+    else
+        directory_session+=$'\n'$(builtin pwd)
+        directory_index=$(wc -l <<< $directory_session)
+    fi
+}
+
 function chpwd_directory() {
     builtin pwd >> $directory_all
-    directory_session+=$'\n'$(builtin pwd)
+    __add_directory_session
 }
 
 if which $(__fzfcmd_dev) >/dev/null 2>&1; then
@@ -19,7 +30,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
         if [ "$directory_type" = "all" ]; then
             tac $directory_all | unique
         elif [ "$directory_type" = "session" ]; then
-            cat <<< $directory_session | unique
+            tac <<< $directory_session | unique
         fi
     }
 
@@ -44,6 +55,30 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     }
     zle -N fzf-directory-widget
     bindkey "^d" fzf-directory-widget
+
+    function cd_prev() {
+        local prev_index=$(($directory_index - 1))
+        if [ $prev_index -gt 0 ]; then
+            if builtin cd $(lines $prev_index <<< $directory_session); then
+                zle reset-prompt
+                __add_directory_session $prev_index
+            fi
+        fi
+    }
+    zle -N cd_prev
+    bindkey "^d^p" cd_prev
+
+    function cd_next() {
+        local next_index=$(($directory_index + 1))
+        if [ $next_index -le $(wc -l <<< $directory_session) ]; then
+            if builtin cd $(lines $next_index <<< $directory_session); then
+                zle reset-prompt
+                __add_directory_session $next_index
+            fi
+        fi
+    }
+    zle -N cd_next
+    bindkey "^d^n" cd_next
 fi
 
 
