@@ -31,7 +31,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
             fi
             tac $history_here | unique | grep -i "^$LBUFFER"
         elif [ "$history_type" = "all_there" ]; then
-            cat -n $history_all | tac | unique -f=1 | sed -e 's/.*$//' | grep -i "^\s*[0-9]\+\s\+$LBUFFER"
+            cat -n $history_all | tac | unique -f=1 | sed -e 's//\t[44m/' -e 's/$/[0m/' | grep -i "^\s*[0-9]\+\s\+$LBUFFER"
         elif [ "$history_type" = "all" ]; then
             sed -e 's/.*$//' $history_all | tac | unique | grep -i "^$LBUFFER"
         elif [ "$history_type" = "session" ]; then
@@ -39,11 +39,11 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
         fi
     }
 
-    function __remove_number() {
+    function __set_buffer() {
         if [ "$1" = "all_there" ]; then
-            echo "de"
+            BUFFER=$(lines $(awk '{print $1}' <<< "$2") $history_all | sed -e 's/^\(.*\)\([^]\+\)$/(cd \2 \&\& \1)/')
         else
-            echo "cat"
+            BUFFER=$(sed -e 's/\\n/\n/g' <<< "$2")
         fi
     }
 
@@ -58,13 +58,13 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
             local key=$(lines 1  <<< "$out")
             if [ "$key" = "ctrl-a" ]; then
                 out=$(lines 2 <<< "$out")
-                BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
+                __set_buffer $history_type "$out"
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 return $ret
             elif [ "$key" = "ctrl-e" ]; then
                 out=$(lines 2 <<< "$out")
-                BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
+                __set_buffer $history_type "$out"
                 CURSOR=${#BUFFER}
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
@@ -81,7 +81,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 history_type="all_there"
                 fzf_default_opts+="--preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'cat' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30%"
             else
-                BUFFER=$(cat <<< "$out" | $(__remove_number $history_type) | sed -e 's/\\n/\n/g')
+                __set_buffer $history_type "$out"
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 zle accept-line
