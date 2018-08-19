@@ -41,7 +41,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
 
     function __set_buffer() {
         if [ "$1" = "all_there" ]; then
-            BUFFER=$(lines $(awk '{print $1}' <<< "$2") $history_all | sed -e 's/^\(.*\)\([^]\+\)$/(cd \2 \&\& \1)/')
+            BUFFER=$(lines $(awk '{print $1}' <<< "$2") $history_all | sed -e 's/^\(.*\)\([^]\+\)$/(cd "\2" \&\& \1)/')
         else
             BUFFER=$(sed -e 's/\\n/\n/g' <<< "$2")
         fi
@@ -79,7 +79,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 history_type="history"
             elif [ "$key" = "ctrl-t" ]; then
                 history_type="all_there"
-                fzf_default_opts+="--preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'cat' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30%"
+                fzf_default_opts+="--preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30%"
             else
                 __set_buffer $history_type "$out"
                 zle redisplay
