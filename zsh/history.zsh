@@ -48,13 +48,13 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     }
 
     function fzf-history-widget() {
-        local fzf_default_opts="--ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+        local fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
         local history_type=${HISTORY_TYPE:-"all"}
         while IFS=$'\n' local out=( \
             $(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev))
         ); do
             local ret=$?
-            fzf_default_opts="--ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+            fzf_default_opts="--no-sort --ansi +m --expect=ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
             local key=$(lines 1  <<< "$out")
             if [ "$key" = "ctrl-a" ]; then
                 out=$(lines 2 <<< "$out")
