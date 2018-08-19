@@ -84,7 +84,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 history_type="history"
             elif [ "$key" = "ctrl-t" ]; then
                 history_type="all_there"
-                fzf_default_opts+="--preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30% "
+                fzf_default_opts+="--with-nth=2.. --preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30% "
             elif [ "$key" = "ctrl-m" ]; then
                 __set_buffer $history_type "$out"
                 zle redisplay
