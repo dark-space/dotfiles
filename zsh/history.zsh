@@ -41,7 +41,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
 
     function __set_buffer() {
         if [ "$1" = "all_there" ]; then
-            BUFFER=$(lines $(awk '{print $1}' <<< "$2") $history_all | sed -e 's/^\(.*\)\([^]\+\)$/(cd "\2" \&\& \1)/')
+            BUFFER=$(lines $(awk '{print $1}' <<< "$2") $history_all | sed -e 's/^\(.*\)\([^]\+\)$/(cd "\2" \&\& \1)/' -e 's/\\n/\n/g')
         else
             BUFFER=$(sed -e 's/\\n/\n/g' <<< "$2")
         fi
