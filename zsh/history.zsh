@@ -49,7 +49,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
 
     function fzf-history-widget() {
         local query=""
-        local fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-m,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+        local fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-m,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
         local history_type=${HISTORY_TYPE:-"all"}
         while IFS=$'\n' local out=( \
             $(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev))
@@ -64,18 +64,20 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 local key=$(lines 2 <<< "$out")
                 out=$(lines 3.. <<< "$out")
             fi
-            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-m,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-m,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
             if [ "$key" = "ctrl-a" ]; then
                 __set_buffer $history_type "$out"
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
+                break;
             elif [ "$key" = "ctrl-e" ]; then
                 __set_buffer $history_type "$out"
                 CURSOR=${#BUFFER}
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
+                break;
             elif [ "$key" = "ctrl-r" ]; then
-                history_type="all"
+                histoy_type="all"
             elif [ "$key" = "ctrl-d" ]; then
                 history_type="directory"
             elif [ "$key" = "ctrl-s" ]; then
@@ -90,6 +92,12 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 zle accept-line
+                break
+            elif [ "$key" = "ctrl-c" ]; then
+                BUFFER="$query"
+                CURSOR=${#BUFFER}
+                zle redisplay
+                typeset -f zle-line-init >/dev/null && zle zle-line-init
                 break
             else
                 break
