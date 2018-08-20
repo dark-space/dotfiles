@@ -48,30 +48,20 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     }
 
     function fzf-history-widget() {
-        local query=""
-        local fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-m,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+        local fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
         local history_type=${HISTORY_TYPE:-"all"}
-        while IFS=$'\n' local out=( \
-            $(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev))
-        ); do
-            cat <<< "$out" > ~/dotfiles/debug.txt
-            query=$(lines 1 <<< "$out")
-            if [[ "$query" =~ ^ctrl- ]]; then
-                local key="$query"
-                query=""
-                out=$(lines 2.. <<< "$out")
-            else
-                local key=$(lines 2 <<< "$out")
-                out=$(lines 3.. <<< "$out")
-            fi
-            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-m,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+        while local out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev)); do
+            local query=$(lines 1 <<< "$out")
+            local key=$(lines 2 <<< "$out")
+            local selected=$(lines 3: <<< "$out")
+            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
             if [ "$key" = "ctrl-a" ]; then
-                __set_buffer $history_type "$out"
+                __set_buffer $history_type "$selected"
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 break;
             elif [ "$key" = "ctrl-e" ]; then
-                __set_buffer $history_type "$out"
+                __set_buffer $history_type "$selected"
                 CURSOR=${#BUFFER}
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
@@ -87,12 +77,6 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
             elif [ "$key" = "ctrl-t" ]; then
                 history_type="all_there"
                 fzf_default_opts+="--with-nth=2.. --preview=\"lines {1} $history_all | sed -e 's/^.*//' | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'\" --preview-window=up:30% "
-            elif [ "$key" = "ctrl-m" ]; then
-                __set_buffer $history_type "$out"
-                zle redisplay
-                typeset -f zle-line-init >/dev/null && zle zle-line-init
-                zle accept-line
-                break
             elif [ "$key" = "ctrl-c" ]; then
                 BUFFER="$query"
                 CURSOR=${#BUFFER}
@@ -100,6 +84,10 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 break
             else
+                __set_buffer $history_type "$selected"
+                zle redisplay
+                typeset -f zle-line-init >/dev/null && zle zle-line-init
+                zle accept-line
                 break
             fi
         done

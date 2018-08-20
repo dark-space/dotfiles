@@ -37,26 +37,14 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     function fzf-directory-widget() {
         local directory_type=${DIRECTORY_TYPE:-"all"}
         local query=""
-        while IFS=$'\n' local out=( \
-            $(read_directory $directory_type | $(__fzfcmd_dev) --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-d,ctrl-s,ctrl-m --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%)
-        ); do
+        while local out=$(read_directory $directory_type | $(__fzfcmd_dev) --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-d,ctrl-s --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%); do
             query=$(lines 1 <<< "$out")
-            if [[ "$query" =~ ^ctrl- ]]; then
-                local key="$query"
-                query=""
-                out=$(lines 2.. <<< "$out")
-            else
-                local key=$(lines 2 <<< "$out")
-                out=$(lines 3.. <<< "$out")
-            fi
+            local key=$(lines 2 <<< "$out")
+            local selected=$(lines 3: <<< "$out")
             if [ "$key" = "ctrl-d" ]; then
                 directory_type="all"
             elif [ "$key" = "ctrl-s" ]; then
                 directory_type="session"
-            elif [ "$key" = "ctrl-m" ]; then
-                builtin cd "$out"
-                zle reset-prompt
-                break
             elif [ "$key" = "ctrl-c" ]; then
                 BUFFER="$query"
                 CURSOR=${#BUFFER}
@@ -64,12 +52,14 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 break
             else
+                builtin cd "$selected"
+                zle reset-prompt
                 break
             fi
         done
     }
     zle -N fzf-directory-widget
-    bindkey "^d" fzf-directory-widget
+    bindkey "^d^d" fzf-directory-widget
 
     function cd_prev() {
         local prev_index=$(($directory_index - 1))
