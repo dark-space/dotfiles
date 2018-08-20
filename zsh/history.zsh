@@ -77,7 +77,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
                 break;
             elif [ "$key" = "ctrl-r" ]; then
-                histoy_type="all"
+                history_type="all"
             elif [ "$key" = "ctrl-d" ]; then
                 history_type="directory"
             elif [ "$key" = "ctrl-s" ]; then
