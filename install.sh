@@ -35,6 +35,18 @@ cli() {
     fi
 }
 
+fzf() {
+    cd $HOME
+    EXTERNAL_APP_PATH=${EXTERNAL_APP_PATH:-$HOME/local}
+    mkdir -p ${EXTERNAL_APP_PATH}/bin
+    wget https://github.com/junegunn/fzf-bin/releases/download/0.17.4/fzf-0.17.4-linux_amd64.tgz
+    tar xvf fzf-0.17.4-linux_amd64.tgz
+    mv fzf ${EXTERNAL_APP_PATH}/bin
+    rm -f fzf-0.17.4-linux_amd64.tgz
+}
+
 dotfiles
 vim
 cli
+fzf
+
