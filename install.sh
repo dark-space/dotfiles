@@ -26,13 +26,12 @@ cli() {
     if $develop; then
         rm -fr cli
         git clone https://github.com/dark-space/cli
-        mkdir -p cli/bin
-        sh cli/CompileAll.sh
     else
-        rm -fr cli/bin
+        rm -fr cli
+        git clone https://github.com/dark-space/cli cli-tmp
         mkdir -p cli
-        cd cli
-        curl https://raw.githubusercontent.com/dark-space/cli/master/download-bin.sh | sh
+        mv cli-tmp/bin cli
+        rm -fr cli-tmp
     fi
 }
 
