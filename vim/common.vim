@@ -70,6 +70,7 @@ nnoremap [b :bp<CR>
 nnoremap ]b :bn<CR>
 nnoremap <Leader><CR> V:!sh<CR>
 
+inoremap <C-c> <ESC>
 inoremap <C-b> <Left>
 inoremap <C-f> <Right>
 
