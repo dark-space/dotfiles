@@ -68,12 +68,12 @@ nnoremap n nzz
 nnoremap N Nzz
 nnoremap [b :bp<CR>
 nnoremap ]b :bn<CR>
-nnoremap <Leader><CR> V:!commandExecutor<CR>
+nnoremap <Leader><CR> V:!sh<CR>
 
 cnoremap <C-a> <C-b>
 cnoremap <C-b> <Left>
 cnoremap <C-f> <Right>
 
 vnoremap * y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
-vnoremap <Leader><CR> :!commandExecutor<CR>
+vnoremap <Leader><CR> :!sh<CR>
 
