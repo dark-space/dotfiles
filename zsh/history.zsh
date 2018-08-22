@@ -5,10 +5,6 @@ history_all=$HOME/.zsh/history_all.txt
 history_basedir=$HOME/.zsh/histories
 history_session=""
 
-function __fzfcmd_dev() {
-    echo "$HOME/fzf"
-}
-
 function preexec_history() {
     cmd=$(newline -z -r="\\n" <<< $1)
     cat <<< "$cmd$(builtin pwd)" >> $history_all
@@ -18,7 +14,7 @@ function preexec_history() {
     history_session+="\n"$cmd
 }
 
-if which $(__fzfcmd_dev) >/dev/null 2>&1; then
+if which fzf >/dev/null 2>&1; then
     function read_history() {
         local history_type=$1
         if [ "$history_type" = "history" ]; then
@@ -50,7 +46,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     function fzf-history-widget() {
         local fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
         local history_type=${HISTORY_TYPE:-"all"}
-        while local out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts $(__fzfcmd_dev)); do
+        while local out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts fzf); do
             local query=$(lines 1 <<< "$out")
             local key=$(lines 2 <<< "$out")
             local selected=$(lines 3: <<< "$out")

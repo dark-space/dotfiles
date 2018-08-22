@@ -5,10 +5,6 @@ directory_all=$HOME/.zsh/directory_all.txt
 directory_session="$(builtin pwd)"
 directory_index=1
 
-function __fzfcmd_dev() {
-    echo "$HOME/fzf"
-}
-
 function __add_directory_session() {
     if [ $# -gt 0 ]; then
         directory_session=$(lines :-1 <<< $directory_session)
@@ -24,7 +20,7 @@ function chpwd_directory() {
     __add_directory_session
 }
 
-if which $(__fzfcmd_dev) >/dev/null 2>&1; then
+if which fzf >/dev/null 2>&1; then
     function read_directory() {
         local directory_type=$1
         if [ "$directory_type" = "all" ]; then
@@ -37,7 +33,7 @@ if which $(__fzfcmd_dev) >/dev/null 2>&1; then
     function fzf-directory-widget() {
         local directory_type=${DIRECTORY_TYPE:-"all"}
         local query=""
-        while local out=$(read_directory $directory_type | $(__fzfcmd_dev) --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-d,ctrl-s --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%); do
+        while local out=$(read_directory $directory_type | fzf --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-d,ctrl-s --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%); do
             query=$(lines 1 <<< "$out")
             local key=$(lines 2 <<< "$out")
             local selected=$(lines 3: <<< "$out")
