@@ -6,9 +6,10 @@ history_basedir=$HOME/.zsh/histories
 history_session=""
 
 function preexec_history() {
+    local history_dir
     cmd=$($dotfiles/lib/newline -z -r="\\n" <<< $1)
     cat <<< "$cmd$(builtin pwd)" >> $history_all
-    local history_dir="${history_basedir}$(builtin pwd)"
+    history_dir="${history_basedir}$(builtin pwd)"
     mkdir -p $history_dir
     cat <<< "$cmd" >> $history_dir/history
     history_session+="\n"$cmd
@@ -16,11 +17,13 @@ function preexec_history() {
 
 if which fzf >/dev/null 2>&1; then
     function read_history() {
-        local history_type=$1
+        local history_type
+        history_type=$1
         if [ "$history_type" = "history" ]; then
             history | sed -e 's/^\s*\S\+\s*//' | tac | $dotfiles/lib/unique | grep -i "^$LBUFFER"
         elif [ "$history_type" = "directory" ]; then
-            local history_here="${history_basedir}$(builtin pwd)/history"
+            local history_here
+            history_here="${history_basedir}$(builtin pwd)/history"
             if [ ! -e $history_here ]; then
                 mkdir -p $(dirname $history_here)
                 touch $history_here
@@ -44,12 +47,14 @@ if which fzf >/dev/null 2>&1; then
     }
 
     function fzf-history-widget() {
-        local fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
-        local history_type=${HISTORY_TYPE:-"all"}
-        while local out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts fzf); do
-            local query=$($dotfiles/lib/lines 1 <<< "$out")
-            local key=$($dotfiles/lib/lines 2 <<< "$out")
-            local selected=$($dotfiles/lib/lines 3: <<< "$out")
+        local fzf_default_opts history_type out
+        fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+        history_type=${HISTORY_TYPE:-"all"}
+        while out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts fzf); do
+            local query key selected
+            query=$($dotfiles/lib/lines 1 <<< "$out")
+            key=$($dotfiles/lib/lines 2 <<< "$out")
+            selected=$($dotfiles/lib/lines 3: <<< "$out")
             fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
             if [ "$key" = "ctrl-a" ]; then
                 __set_buffer $history_type "$selected"
