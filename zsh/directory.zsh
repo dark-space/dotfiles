@@ -7,7 +7,7 @@ directory_index=1
 
 function __add_directory_session() {
     if [ $# -gt 0 ]; then
-        directory_session=$(lines :-1 <<< $directory_session)
+        directory_session=$($dotfiles/lib/lines :-1 <<< $directory_session)
         directory_index=$1
     else
         directory_session+=$'\n'$(builtin pwd)
@@ -24,9 +24,9 @@ if which fzf >/dev/null 2>&1; then
     function read_directory() {
         local directory_type=$1
         if [ "$directory_type" = "all" ]; then
-            tac $directory_all | unique
+            tac $directory_all | $dotfiles/lib/unique
         elif [ "$directory_type" = "session" ]; then
-            tac <<< $directory_session | unique
+            tac <<< $directory_session | $dotfiles/lib/unique
         fi
     }
 
@@ -34,9 +34,9 @@ if which fzf >/dev/null 2>&1; then
         local directory_type=${DIRECTORY_TYPE:-"all"}
         local query=""
         while local out=$(read_directory $directory_type | fzf --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-d,ctrl-s --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs unbuffer ls --color=always | head'" --preview-window=up:30%); do
-            query=$(lines 1 <<< "$out")
-            local key=$(lines 2 <<< "$out")
-            local selected=$(lines 3: <<< "$out")
+            query=$($dotfiles/lib/lines 1 <<< "$out")
+            local key=$($dotfiles/lib/lines 2 <<< "$out")
+            local selected=$($dotfiles/lib/lines 3: <<< "$out")
             if [ "$key" = "ctrl-d" ]; then
                 directory_type="all"
             elif [ "$key" = "ctrl-s" ]; then
@@ -60,7 +60,7 @@ if which fzf >/dev/null 2>&1; then
     function cd_prev() {
         local prev_index=$(($directory_index - 1))
         if [ $prev_index -gt 0 ]; then
-            if builtin cd $(lines $prev_index <<< $directory_session); then
+            if builtin cd $($dotfiles/lib/lines $prev_index <<< $directory_session); then
                 zle reset-prompt
                 __add_directory_session $prev_index
             fi
@@ -72,7 +72,7 @@ if which fzf >/dev/null 2>&1; then
     function cd_next() {
         local next_index=$(($directory_index + 1))
         if [ $next_index -le $(wc -l <<< $directory_session) ]; then
-            if builtin cd $(lines $next_index <<< $directory_session); then
+            if builtin cd $($dotfiles/lib/lines $next_index <<< $directory_session); then
                 zle reset-prompt
                 __add_directory_session $next_index
             fi
