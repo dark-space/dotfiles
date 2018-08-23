@@ -1,7 +1,7 @@
 if which fzf >/dev/null 2>&1; then
     function fzf-git-add() {
         local selected
-        selected=($(unbuffer git status -s | grep -v '^[\d\dm[A-Z]' | fzf --no-sort --reverse --ansi --preview="git diff --color=always {2..}" --preview-window=up:80% -m | awk '{print $2}'))
+        selected=($($dotfiles/lib/unbuffer git status -s | grep -v '^[\d\dm[A-Z]' | fzf --no-sort --reverse --ansi --preview="git diff --color=always {2..}" --preview-window=up:80% -m | awk '{print $2}'))
         if [[ "$selected" =~ \\S ]]; then
             sed -e 's/\s\+/\n/g' -e 's/^/add /' <<< "$selected"
             git add $selected
@@ -33,7 +33,7 @@ if which fzf >/dev/null 2>&1; then
 
     function fzf-git-status-widget() {
         local selected
-        selected=$(unbuffer git status -sb | fzf --no-sort --reverse --ansi --preview="git diff --color=always {2..}" --preview-window=up:80%)
+        selected=$($dotfiles/lib/unbuffer git status -sb | fzf --no-sort --reverse --ansi --preview="git diff --color=always {2..}" --preview-window=up:80%)
     }
     zle -N fzf-git-status-widget
     bindkey "^g^s" fzf-git-status-widget

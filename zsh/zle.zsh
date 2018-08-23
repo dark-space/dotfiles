@@ -111,7 +111,7 @@ function expandByFzf() {
 zle -N expandByFzf
 
 function copyBuffer() {
-    $dotfiles/lib/clip <(echo -n $BUFFER)
+    clip <(echo -n $BUFFER)
 }
 zle -N copyBuffer
 
