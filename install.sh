@@ -51,8 +51,31 @@ fzf() {
     rm -f fzf-0.17.4-linux_amd64.tgz
 }
 
+nim() {
+    cd $HOME
+    if $develop; then
+        if rm -fr /tmp/choosenim-0.3.2_linux_amd64 /tmp/untar-nim; then
+            local count=0
+            curl https://nim-lang.org/choosenim/init.sh -sSf > choosenim.sh
+            while true; do
+                sh choosenim.sh -y
+                if [ $? -eq 0 ]; then
+                    break
+                fi
+                count=$(($count + 1))
+                if [ $count -ge 5 ]; then
+                    echo "[41m[Error] Failed to installing nim.[0m"
+                    break
+                fi
+            done
+            rm -fr /tmp/choosenim-0.3.2_linux_amd64 /tmp/untar-nim
+        fi
+    fi
+}
+
 dotfiles
 vim
 cli
 fzf
+nim
 
