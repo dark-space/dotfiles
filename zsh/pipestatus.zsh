@@ -1,5 +1,3 @@
-LIB_DIR="$dotfiles/zsh"
-
 PRE_COMMAND=""
 
 function preexec_pipestatus() {
@@ -9,7 +7,7 @@ function preexec_pipestatus() {
 function precmd_pipestatus() {
     PIPESTATUS=$1
     if [ ! -z $PRE_COMMAND ]; then
-        STATUS=$(perl $LIB_DIR/returnStatus.pl $PIPESTATUS)
+        STATUS=$(perl $dotfiles/lib/returnStatus.pl $PIPESTATUS)
         if [ $STATUS -eq 0 ]; then
             PROMPT=$'\n'$fg[white]"@END %D %* ["${PRE_COMMAND}"]"${reset_color}
             PROMPT+=$'\n'$PROMPT_STR

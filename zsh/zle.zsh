@@ -1,5 +1,3 @@
-LIB_DIR="$dotfiles/zsh"
-
 function override_backward-word() {
     if [ $CURSOR -gt 2 ] && [ "X$LBUFFER[-2,-1]" = "X /" ]; then
         zle backward-char
@@ -92,7 +90,7 @@ zle -N override_expand-or-complete
 
 function readPathLink() {
     BUF_N=${#BUFFER}
-    B=$(perl $LIB_DIR/readPathLink.pl "$BUFFER" $CURSOR)
+    B=$(perl $dotfiles/lib/readPathLink.pl "$BUFFER" $CURSOR)
     if [ ! -z $B ]; then
         BUFFER=$B
         CURSOR=$(($CURSOR + ${#BUFFER} - $BUF_N))
@@ -102,7 +100,7 @@ zle -N readPathLink
 
 function expandByFzf() {
     BUFFER_LENGTH=$#BUFFER
-    BUFFER=$(perl $LIB_DIR/expandByFzf.pl $BUFFER $CURSOR)
+    BUFFER=$(perl $dotfiles/lib/expandByFzf.pl $BUFFER $CURSOR)
     CURSOR+=$(($#BUFFER - $BUFFER_LENGTH - 2))
     zle vi-forward-blank-word-end
     zle forward-char
