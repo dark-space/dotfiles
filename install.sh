@@ -16,9 +16,11 @@ dotfiles() {
 vim() {
     cd $HOME
     mkdir -p .vim/backup
-    mkdir -p volt
-    wget https://github.com/vim-volt/volt/releases/download/v0.3.4/volt-v0.3.4-linux-amd64 -O volt/volt
-    chmod +x volt/volt
+    if [ ! -e volt/volt ]; then
+        mkdir -p volt
+        wget https://github.com/vim-volt/volt/releases/download/v0.3.4/volt-v0.3.4-linux-amd64 -O volt/volt
+        chmod +x volt/volt
+    fi
     if $develop; then
         volt/volt get https://github.com/zah/nim.vim
     fi
