@@ -1,9 +1,6 @@
 #!/bin/sh 
 
 develop=false
-if [ $# -gt 0 ] && [ "$1" = "--dev" ]; then
-    develop=true
-fi
 
 dotfiles() {
     cd $HOME
@@ -73,9 +70,21 @@ nim() {
     fi
 }
 
-dotfiles
-vim
-cli
-fzf
-nim
+
+if [ $# -gt 0 ] && [ "$1" = "--dev" ]; then
+    develop=true
+    shift
+fi
+if [ $# -eq 0 ]; then
+    dotfiles
+    vim
+    cli
+    fzf
+    nim
+else
+    while [ ! -z "$1" ]; do
+        $1
+        shift
+    done
+fi
 
