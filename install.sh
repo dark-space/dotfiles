@@ -46,6 +46,9 @@ fzf() {
     tar xvf fzf-0.17.4-linux_amd64.tgz
     mv fzf ${EXTERNAL_APP_PATH}/bin
     rm -f fzf-0.17.4-linux_amd64.tgz
+    volt/volt get https://github.com/junegunn/fzf
+    ls -1d ~/.vim/pack/volt/opt/github.com_junegunn_fzf/* | grep -v 'plugin$' | xargs rm -fr
+    volt/volt get https://github.com/junegunn/fzf.vim
 }
 
 nim() {
