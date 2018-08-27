@@ -6,7 +6,9 @@ if [ $# -ge 2 ] && [[ "$1" =~ ^-\d+ ]]; then
     shift
 fi
 
-if [ -f $1 ]; then
+if [ ! -e $1 ]; then
+    echo ""
+elif [ -f $1 ]; then
     if file $1 | grep '\(text\|empty\)' >/dev/null 2>&1; then
         head $n $1
     else
