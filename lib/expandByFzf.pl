@@ -55,12 +55,13 @@ if (scalar(@grepped) == 0) {
 if (length($chosen) > 0) {
     my $expanded = "";
     foreach (split("\n", $chosen)) {
-        if (length($expanded) > 0) { $expanded .= " "; }
+        $expanded =~ s/([^ ])$/$1 /;
         if ($target !~ /\//) {
             $expanded .= $_;
         } else {
             $expanded .= $d . "/" . $_;
         }
+        $expanded =~ s/([^\/])$/$1 /;
     }
     print $head . $expanded . $tail;
 } else {
@@ -97,8 +98,7 @@ sub curIslandPos {
         return ($left, $right);
     } else {
         my $left = rindex($b, " ", $pos) + 1;
-        my $right = index($b, " ", $pos) - 1;
-        if ($right < 0) { $right = length($b); }
+        my $right = $pos;
         return ($left, $right);
     }
 }
