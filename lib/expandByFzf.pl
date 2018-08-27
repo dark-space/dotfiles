@@ -46,7 +46,7 @@ my $chosen = "";
 if (scalar(@grepped) == 0) {
     $chosen = &fzf($d, "$f ", $mixed_list);
 } elsif (scalar(@grepped) == 1) {
-    $chosen = $grepped[0];
+    ($chosen = $grepped[0]) =~ s/\[[\d;]+m//g;
 } else {
     my $pre_test = join("\n", @grepped);
     $chosen = &fzf($d, "", $pre_test);
