@@ -69,7 +69,7 @@ if (length($chosen) > 0) {
 
 sub fzf {
     my ($d, $q, $texts) = @_;
-    my $fzf_default_opts = "-m -e --ansi --reverse --border --height 50% --preview \"$dotfiles_path/lib/preview $d/{}\" --select-1 -0";
+    my $fzf_default_opts = "-m -e --ansi --reverse --border --height 90% --preview \"$dotfiles_path/lib/preview $d/{}\" --preview-window=70% --select-1 -0";
     return `echo -n "$texts" | fzf --query="$q" $fzf_default_opts`;
 }
 
