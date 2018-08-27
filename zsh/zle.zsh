@@ -98,17 +98,6 @@ function readPathLink() {
 }
 zle -N readPathLink
 
-function expandByFzf() {
-    local buffer_length
-    buffer_length=$#BUFFER
-    BUFFER=$(perl $dotfiles/lib/expandByFzf.pl $BUFFER $CURSOR)
-    CURSOR+=$(($#BUFFER - $buffer_length - 2))
-    zle vi-forward-blank-word-end
-    zle forward-char
-    zle reset-prompt
-}
-zle -N expandByFzf
-
 function copyBuffer() {
     clip <(echo -n $BUFFER)
 }
@@ -134,8 +123,6 @@ bindkey "^u"    kill-left-line
 bindkey "^i"    override_expand-or-complete
 # readPathLinkを適用する
 bindkey "^@"    readPathLink
-# ファイル選択にfzfを使う
-bindkey "^[:"   expandByFzf
 # charを検索して移動
 bindkey "^]"    vi-find-next-char
 # バッファの内容をコピー
