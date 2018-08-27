@@ -99,9 +99,10 @@ function readPathLink() {
 zle -N readPathLink
 
 function expandByFzf() {
-    BUFFER_LENGTH=$#BUFFER
+    local buffer_length
+    buffer_length=$#BUFFER
     BUFFER=$(perl $dotfiles/lib/expandByFzf.pl $BUFFER $CURSOR)
-    CURSOR+=$(($#BUFFER - $BUFFER_LENGTH - 2))
+    CURSOR+=$(($#BUFFER - $buffer_length - 2))
     zle vi-forward-blank-word-end
     zle forward-char
     zle reset-prompt
