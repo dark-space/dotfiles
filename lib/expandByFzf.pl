@@ -112,6 +112,3 @@ sub splitPath {
     }
 }
 
-sub unique {
-
-}
