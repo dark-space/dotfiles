@@ -60,6 +60,27 @@ if which fzf >/dev/null 2>&1; then
     zle -N fzf-directory-widget
     bindkey "^d^d" fzf-directory-widget
 
+    function fzf-cd() {
+        local directory_type query out
+        directory_type=${DIRECTORY_TYPE:-"all"}
+        query=""
+        while out=$(read_directory $directory_type | fzf --query="$query" --print-query --no-sort --ansi +m --expect=ctrl-d,ctrl-s --preview="cat <<< {} | cmdpack 'sed -e \"s/^/[44m/\" -e \"s/$/[0m/\"' 'xargs $dotfiles/lib/unbuffer ls --color=always | head'" --preview-window=up:30%); do
+            local key selected
+            query=$(lines 1 <<< "$out")
+            key=$(lines 2 <<< "$out")
+            selected=$(lines 3: <<< "$out")
+            if [ "$key" = "ctrl-d" ]; then
+                directory_type="all"
+            elif [ "$key" = "ctrl-s" ]; then
+                directory_type="session"
+            else
+                cd "$selected"
+                break
+            fi
+        done
+    }
+    alias d='fzf-cd'
+
     function cd_prev() {
         local prev_index
         prev_index=$(($directory_index - 1))
