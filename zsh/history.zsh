@@ -48,25 +48,34 @@ if which fzf >/dev/null 2>&1; then
 
     function fzf-history-widget() {
         local fzf_default_opts history_type out
-        fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+        fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t,F1,F2,F3,F4,F5,F6,F7,F8,F9 "
         history_type=${HISTORY_TYPE:-"all"}
         while out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts fzf); do
-            local query key selected
+            local query key selected >/dev/null
             query=$(lines 1 <<< "$out")
             key=$(lines 2 <<< "$out")
             selected=$(lines 3: <<< "$out")
-            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t "
+            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t,F1,F2,F3,F4,F5,F6,F7,F8,F9 "
             if [ "$key" = "ctrl-a" ]; then
                 __set_buffer $history_type "$selected"
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
-                break;
+                break
             elif [ "$key" = "ctrl-e" ]; then
                 __set_buffer $history_type "$selected"
                 CURSOR=${#BUFFER}
                 zle redisplay
                 typeset -f zle-line-init >/dev/null && zle zle-line-init
-                break;
+                break
+            elif [[ "$key" =~ ^F[1-9]$ ]]; then
+                if [ "$history_type" = "all_there" ]; then
+                    local cmd
+                    cmd=$(lines $(awk '{print $1}' <<< "$selected") $history_all | sed -e 's/^\(.*\)\([^]\+\)$/(cd "\2" \&\& \1)/' -e 's/\\n/; /g')
+                    alias ${key#F}="$cmd"
+                else
+                    alias ${key#F}="$(sed -e 's/\\n/\n/g' <<< $selected)"
+                fi
+                break
             elif [ "$key" = "ctrl-r" ]; then
                 history_type="all"
             elif [ "$key" = "ctrl-d" ]; then
