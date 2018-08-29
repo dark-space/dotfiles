@@ -7,13 +7,8 @@ if [ $# -ge 2 ] && [[ "$1" =~ ^-\d+ ]]; then
 fi
 
 if [ ! -e $1 ]; then
-    for d in $path; do
-        if [ -e $d/$1 ]; then
-            echo $d
-            return
-        fi
-    done
-    echo "Built-in"
+    cmd=$(sed -e 's/^\.\///' <<< $1)
+    which $cmd
 elif [ -f $1 ]; then
     if file $1 | grep '\(text\|empty\)' >/dev/null 2>&1; then
         head $n $1
