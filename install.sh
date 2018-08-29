@@ -31,12 +31,6 @@ cli() {
     if $develop; then
         rm -fr cli
         git clone https://github.com/dark-space/cli
-    else
-        rm -fr cli
-        git clone https://github.com/dark-space/cli cli-tmp
-        mkdir -p cli
-        mv cli-tmp/bin cli
-        rm -fr cli-tmp
     fi
 }
 
