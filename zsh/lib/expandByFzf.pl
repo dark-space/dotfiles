@@ -22,7 +22,7 @@ if ($head =~ /^\s*$/ && $target !~ /\// && $target =~ /\S/) {
         $files{$_} = 1;
     }
     my @commands = ();
-    my $c = `zsh $dotfiles_path/lib/compgen -abck | unique | grep -i '$f'`;
+    my $c = `zsh $dotfiles_path/bin/compgen -abck | unique | grep -i '$f'`;
     foreach (split("\n", $c)) {
         if (not defined ($files{$_})) {
             push(@commands, "[33m" . $_ . "[0m");
@@ -70,7 +70,7 @@ if (length($chosen) > 0) {
 
 sub fzf {
     my ($d, $q, $texts) = @_;
-    my $fzf_default_opts = "-m -e --ansi --reverse --border --height 90% --preview \"$dotfiles_path/lib/preview $d/{}\" --preview-window=70% --select-1 -0";
+    my $fzf_default_opts = "-m -e --ansi --reverse --border --height 90% --preview \"$dotfiles_path/zsh/lib/preview.zsh $d/{}\" --preview-window=70% --select-1 -0";
     return `echo -n "$texts" | fzf --query="$q" $fzf_default_opts`;
 }
 

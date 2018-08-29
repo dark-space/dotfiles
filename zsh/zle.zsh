@@ -90,7 +90,7 @@ zle -N override_expand-or-complete
 
 function readPathLink() {
     BUF_N=${#BUFFER}
-    B=$(perl $dotfiles/lib/readPathLink.pl "$BUFFER" $CURSOR)
+    B=$(perl $dotfiles/zsh/lib/readPathLink.pl "$BUFFER" $CURSOR)
     if [ ! -z $B ]; then
         BUFFER=$B
         CURSOR=$(($CURSOR + ${#BUFFER} - $BUF_N))

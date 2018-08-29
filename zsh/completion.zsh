@@ -1,7 +1,7 @@
 function completion() {
     local buffer_length
     buffer_length=$#BUFFER
-    BUFFER=$(perl $dotfiles/lib/expandByFzf.pl "$BUFFER" $CURSOR "$dotfiles")
+    BUFFER=$(perl $dotfiles/zsh/lib/expandByFzf.pl "$BUFFER" $CURSOR "$dotfiles")
     CURSOR+=$(($#BUFFER - $buffer_length - 2))
     zle vi-forward-blank-word-end
     zle forward-char
@@ -13,7 +13,7 @@ bindkey "\e[Z" completion
 function expandByFzf() {
     local buffer_length
     buffer_length=$#BUFFER
-    BUFFER=$(perl $dotfiles/lib/expandByFzf.pl $BUFFER $CURSOR)
+    BUFFER=$(perl $dotfiles/zsh/lib/expandByFzf.pl $BUFFER $CURSOR)
     CURSOR+=$(($#BUFFER - $buffer_length - 2))
     zle vi-forward-blank-word-end
     zle forward-char

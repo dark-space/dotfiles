@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+stdin=$(cat /proc/self/fd/0)
+while [ $# -gt 0 ]; do
+    eval "echo \"$stdin\" | $1"
+    shift
+done
+

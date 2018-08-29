@@ -7,7 +7,7 @@ function preexec_pipestatus() {
 function precmd_pipestatus() {
     PIPESTATUS=$1
     if [ ! -z $PRE_COMMAND ]; then
-        STATUS=$(perl $dotfiles/lib/returnStatus.pl $PIPESTATUS)
+        STATUS=$(perl $dotfiles/zsh/lib/returnStatus.pl $PIPESTATUS)
         if [ $STATUS -eq 0 ]; then
             PROMPT=$'\n'$fg[white]"@END %D %* ["${PRE_COMMAND}"]"${reset_color}
             PROMPT+=$'\n'$PROMPT_STR
