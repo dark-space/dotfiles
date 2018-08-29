@@ -21,7 +21,7 @@ if grep '^Ubuntu' >/dev/null 2>&1 < /etc/issue; then
 fi
 
 if [ -n $INTERACTIVE_APP ]; then
-    PATH=${CLI_APP_PATH}/bin:${EXTERNAL_APP_PATH}/bin:${PATH}
+    PATH=$dotfiles/bin:${EXTERNAL_APP_PATH}/bin:${PATH}
     unset INTERACTIVE_APP
 fi
 

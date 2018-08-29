@@ -13,7 +13,6 @@ function remove_windows_path() {
 }
 
 if [[ $SHELL =~ bash$ ]]; then
-    export CLI_APP_PATH=$HOME/cli
     export EXTERNAL_APP_PATH=$HOME/local
     if [ -e $HOME/.nimble/bin/nim ]; then
         export NIM_HOME=$HOME/.nimble
