@@ -30,7 +30,7 @@ if ($head =~ /^\s*$/ && $target !~ /\// && $target =~ /\S/) {
     }
     $mixed_list .= join("\n", @commands);
 }
-#open(OUT, ">", "$dotfiles_path/debug.txt");
+#open(OUT, ">>", "$dotfiles_path/debug.txt");
 #print OUT "$mixed_list\n";
 #close(OUT);
 
@@ -105,6 +105,9 @@ sub curIslandPos {
 
 sub splitPath {
     my $path = $_[0];
+    if ($path eq "/") {
+        return ("/", "");
+    }
     if ($path =~ /^(.*)\/([^\/]*)/) {
         return ($1, $2);
     } else {
