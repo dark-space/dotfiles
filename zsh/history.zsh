@@ -75,7 +75,6 @@ if which fzf >/dev/null 2>&1; then
                 else
                     alias ${key#F}="$(sed -e 's/\\n/\n/g' <<< $selected)"
                 fi
-                break
             elif [ "$key" = "ctrl-r" ]; then
                 history_type="all"
             elif [ "$key" = "ctrl-d" ]; then
