@@ -18,7 +18,7 @@ compinit
 # 補完候補にも色を付ける
 zstyle ':completion:*' list-colors 'di=34;1'
 # ファイル名の途中でも補完候補とし、小文字は大文字としても検索
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' '+l:|=* r:|=*'
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[.-]=*'
 # _から始まる補完関数を補完候補にしない
 zstyle ':completion::complete:-command-::' tag-order !functions
 # Ctrl+s （ターミナルロック）を無効化
@@ -45,8 +45,6 @@ setopt interactive_comments
 
 # deleteキーを使えるようにする
 bindkey "^[[3~" delete-char
-# Shift-Tabで補完候補を逆順に回す
-bindkey "\e[Z"  reverse-menu-complete
 
 # 一つ上のディレクトリへ移動
 function cd_up() {

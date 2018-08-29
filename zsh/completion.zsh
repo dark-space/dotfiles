@@ -8,7 +8,7 @@ function completion() {
     zle reset-prompt
 }
 zle -N completion
-bindkey "^[:" completion
+bindkey "\e[Z" completion
 
 function expandByFzf() {
     local buffer_length
