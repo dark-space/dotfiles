@@ -37,11 +37,13 @@ cli() {
 fzf() {
     cd $HOME
     EXTERNAL_APP_PATH=${EXTERNAL_APP_PATH:-$HOME/local}
-    mkdir -p ${EXTERNAL_APP_PATH}/bin
-    wget https://github.com/junegunn/fzf-bin/releases/download/0.17.4/fzf-0.17.4-linux_amd64.tgz
-    tar xvf fzf-0.17.4-linux_amd64.tgz
-    mv fzf ${EXTERNAL_APP_PATH}/bin
-    rm -f fzf-0.17.4-linux_amd64.tgz
+    if ! which fzf >/dev/null 2>&1; then
+        mkdir -p ${EXTERNAL_APP_PATH}/bin
+        wget https://github.com/junegunn/fzf-bin/releases/download/0.17.4/fzf-0.17.4-linux_amd64.tgz
+        tar xvf fzf-0.17.4-linux_amd64.tgz
+        mv fzf ${EXTERNAL_APP_PATH}/bin
+        rm -f fzf-0.17.4-linux_amd64.tgz
+    fi
     if [ -e volt/volt ]; then
         volt/volt get https://github.com/junegunn/fzf
         ls -1d ~/.vim/pack/volt/opt/github.com_junegunn_fzf/* | grep -v 'plugin$' | xargs rm -fr
