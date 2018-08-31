@@ -4,8 +4,6 @@ filetype plugin indent on
 set cpoptions+=W
 " 折り返したときは行番号の部分にも描画する
 set cpoptions+=n
-" 色をつける
-syntax on
 " 現在のバッファに変更があっても他のバッファに移れる
 set hidden
 " 行番号を表示
