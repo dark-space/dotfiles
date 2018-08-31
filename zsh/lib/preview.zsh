@@ -11,11 +11,17 @@ if [ ! -e $1 ]; then
     which $cmd
 elif [ -f $1 ]; then
     if file $1 | grep '\(text\|empty\)' >/dev/null 2>&1; then
+        ls -lp --color=always $1 | sed -e 's/^/[30;46m/' -e 's/$/[0m/'
+        echo ""
         head $n $1
     else
+        ls -lp --color=always $1 | sed -e 's/^/[30;46m/' -e 's/$/[0m/'
+        echo ""
         od -Ax -tx1z $1 | head $n
     fi
 else
-    ls -a --color $1 | lines 3.. | head $n
+    ls -dlp --color=always $1 | sed -e 's/^/[30;46m/' -e 's/$/[0m/'
+    echo ""
+    unbuffer ls -a --color=always $1 | head $n
 fi
 
