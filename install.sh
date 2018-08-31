@@ -43,6 +43,7 @@ fzf() {
     git clone https://github.com/junegunn/fzf .vim/pack/master/opt/github.com_junegunn_fzf
     find .vim/pack/master/opt/github.com_junegunn_fzf -maxdepth 1 -mindepth 1 | grep -v 'plugin$' | xargs rm -fr
     git clone https://github.com/junegunn/fzf.vim .vim/pack/master/opt/github.com_junegunn_fzf.vim
+    sed -i "s/\(return \['--prompt', head, '--query', tail\]\)$/\1 + get(g:, 'fzf_complete_path_options', [])/" .vim/pack/master/opt/github.com_junegunn_fzf.vim/autoload/fzf/vim/complete.vim
 }
 
 nim() {
