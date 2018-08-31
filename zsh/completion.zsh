@@ -133,17 +133,13 @@ fzf-completion() {
   # http://zsh.sourceforge.net/FAQ/zshfaq03.html
   # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion-Flags
   tokens=(${(z)LBUFFER})
-  if [ ${#tokens} -lt 1 ]; then
-    zle ${fzf_default_completion:-expand-or-complete}
-    return
-  fi
   cmd=${tokens[1]}
   # Explicitly allow for empty trigger.
   trigger=${FZF_COMPLETION_TRIGGER-''}
-  [ -z "$trigger" -a ${LBUFFER[-1]} = ' ' ] && tokens+=("")
+  [ -z "$trigger" -a "${LBUFFER[-1]}" = ' ' ] && tokens+=("")
   tail=${LBUFFER:$(( ${#LBUFFER} - ${#trigger} ))}
   # Kill completion (do not require trigger sequence)
-  if [ $cmd = kill -a ${LBUFFER[-1]} = ' ' ]; then
+  if [ "$cmd" = kill -a "${LBUFFER[-1]}" = ' ' ]; then
     fzf="$(__fzfcmd_complete)"
     matches=$(command ps -ef | sed 1d | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-50%} --min-height 15 --reverse $FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window down:3:wrap $FZF_COMPLETION_OPTS" ${=fzf} -m | awk '{print $2}' | tr '\n' ' ')
     if [ -n "$matches" ]; then
@@ -152,7 +148,7 @@ fzf-completion() {
     zle redisplay
     typeset -f zle-line-init >/dev/null && zle zle-line-init
   # Trigger sequence given
-  elif [ ${#tokens} -gt 1 -a "$tail" = "$trigger" ]; then
+  else
     d_cmds=(${=FZF_COMPLETION_DIR_COMMANDS:-cd pushd rmdir})
     [ -z "$trigger"      ] && prefix=${tokens[-1]} || prefix=${tokens[-1]:0:-${#trigger}}
     [ -z "${tokens[-1]}" ] && lbuf=$LBUFFER        || lbuf=${LBUFFER:0:-${#tokens[-1]}}
@@ -163,9 +159,6 @@ fzf-completion() {
     else
       _fzf_path_completion "$prefix" "$lbuf"
     fi
-  # Fall back to default completion
-  else
-    zle ${fzf_default_completion:-expand-or-complete}
   fi
 }
 [ -z "$fzf_default_completion" ] && {
