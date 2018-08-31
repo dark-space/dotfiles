@@ -2,6 +2,10 @@
 
 develop=false
 
+download() {
+    git clone https://github.com/dark-space/dotfiles
+}
+
 dotfiles() {
     cd $HOME
     for f in dotfiles/.??*; do
@@ -74,6 +78,7 @@ if [ $# -gt 0 ] && [ "$1" = "--dev" ]; then
     shift
 fi
 if [ $# -eq 0 ]; then
+    download
     dotfiles
     vim
     cli
