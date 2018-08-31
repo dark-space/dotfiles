@@ -16,13 +16,9 @@ dotfiles() {
 vim() {
     cd $HOME
     mkdir -p .vim/backup
-    if [ ! -e volt/volt ]; then
-        mkdir -p volt
-        wget https://github.com/vim-volt/volt/releases/download/v0.3.4/volt-v0.3.4-linux-amd64 -O volt/volt
-        chmod +x volt/volt
-    fi
+    mkdir -p .vim/pack/master/{opt,start}
     if $develop; then
-        volt/volt get https://github.com/zah/nim.vim
+        git clone https://github.com/zah/nim.vim .vim/pack/master/opt/github.com_zah_nim.vim
     fi
 }
 
@@ -44,11 +40,9 @@ fzf() {
         mv fzf ${EXTERNAL_APP_PATH}/bin
         rm -f fzf-0.17.4-linux_amd64.tgz
     fi
-    if [ -e volt/volt ]; then
-        volt/volt get https://github.com/junegunn/fzf
-        ls -1d ~/.vim/pack/volt/opt/github.com_junegunn_fzf/* | grep -v 'plugin$' | xargs rm -fr
-        volt/volt get https://github.com/junegunn/fzf.vim
-    fi
+    git clone https://github.com/junegunn/fzf .vim/pack/master/opt/github.com_junegunn_fzf
+    find .vim/pack/master/opt/github.com_junegunn_fzf -maxdepth 1 -mindepth 1 | grep -v 'plugin$' | xargs rm -fr
+    git clone https://github.com/junegunn/fzf.vim .vim/pack/master/opt/github.com_junegunn_fzf.vim
 }
 
 nim() {
