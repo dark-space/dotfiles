@@ -128,6 +128,8 @@ _fzf_complete_unalias() {
   )
 }
 fzf-completion() {
+  FZF_DEFAULT_OPTS="-e"
+  FZF_COMPLETION_OPTS="--preview=\"$dotfiles/zsh/lib/preview.zsh {}\" --preview-window=right:70%"
   local tokens cmd prefix trigger tail fzf matches lbuf d_cmds
   setopt localoptions noshwordsplit noksh_arrays noposixbuiltins
   # http://zsh.sourceforge.net/FAQ/zshfaq03.html
