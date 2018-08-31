@@ -4,6 +4,8 @@
 history_all=$HOME/.zsh/history_all.txt
 history_basedir=$HOME/.zsh/histories
 history_session=""
+mkdir -p $HOME/.zsh
+touch $history_all
 
 function preexec_history() {
     local history_dir

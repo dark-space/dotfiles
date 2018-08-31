@@ -63,7 +63,7 @@ nim() {
                     break
                 fi
             done
-            rm -fr /tmp/choosenim-0.3.2_linux_amd64 /tmp/untar-nim
+            rm -fr choosenim.sh /tmp/choosenim-0.3.2_linux_amd64 /tmp/untar-nim
         fi
     fi
 }
