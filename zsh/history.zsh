@@ -48,14 +48,14 @@ if which fzf >/dev/null 2>&1; then
 
     function fzf-history-widget() {
         local fzf_default_opts history_type out
-        fzf_default_opts="--query=\"\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t,F1,F2,F3,F4,F5,F6,F7,F8,F9 "
+        fzf_default_opts="--query=\"\" --print-query --no-sort --ansi -e +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t,F1,F2,F3,F4,F5,F6,F7,F8,F9 "
         history_type=${HISTORY_TYPE:-"all"}
         while out=$(read_history $history_type | FZF_DEFAULT_OPTS=$fzf_default_opts fzf); do
             local query key selected >/dev/null
             query=$(lines 1 <<< "$out")
             key=$(lines 2 <<< "$out")
             selected=$(lines 3: <<< "$out")
-            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t,F1,F2,F3,F4,F5,F6,F7,F8,F9 "
+            fzf_default_opts="--query=\"$query\" --print-query --no-sort --ansi -e +m --expect=ctrl-c,ctrl-a,ctrl-e,ctrl-r,ctrl-d,ctrl-s,ctrl-h,ctrl-t,F1,F2,F3,F4,F5,F6,F7,F8,F9 "
             if [ "$key" = "ctrl-a" ]; then
                 __set_buffer $history_type "$selected"
                 zle redisplay
