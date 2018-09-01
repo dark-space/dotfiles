@@ -10,7 +10,7 @@ if [ ! -e $1 ]; then
     cmd=$(echo -n "$1" | sed -e 's/^\.\///')
     which $cmd
 elif [ -f $1 ]; then
-    if file $1 | grep '\(text\|empty\)' >/dev/null 2>&1; then
+    if file $1 | grep '\(text\|empty\|: data$\)' >/dev/null 2>&1; then
         ls -lp --color=always $1 | sed -e 's/^/[30;46m/' -e 's/$/[0m/'
         echo ""
         head $n $1
