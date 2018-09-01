@@ -12,7 +12,7 @@ if [ -e "$1" ]; then
         head $n "$1"
     fi
 else
-    branch=$(git branch | grep '^\*' | de)
+    branch=$(git branch | grep '^\*' | strutil de)
     if echo "$1" | grep "^${branch}\.\.\." >/dev/null 2>&1; then
         git diff --color=always $branch
     else

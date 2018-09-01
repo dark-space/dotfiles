@@ -26,11 +26,11 @@ vim() {
     fi
 }
 
-cli() {
+cui() {
     cd $HOME
     if $develop; then
-        rm -fr cli
-        git clone https://github.com/dark-space/cli
+        rm -fr cuiutils
+        git clone https://github.com/dark-space/cliutils
     fi
 }
 
@@ -81,7 +81,7 @@ if [ $# -eq 0 ]; then
     download
     dotfiles
     vim
-    cli
+    cui
     fzf
     nim
 else
